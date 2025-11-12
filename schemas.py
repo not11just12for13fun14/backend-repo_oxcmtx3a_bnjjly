@@ -6,7 +6,11 @@ Collection name is the lowercase of the class name.
 """
 
 from pydantic import BaseModel, Field
-from typing import List, Optional, Literal
+from typing import List, Optional, Literal, Union
+
+class SizeStock(BaseModel):
+    size: Union[str, int] = Field(..., description="Size label (e.g., 40, 41, 42) or string like S/M/L")
+    stock: int = Field(..., ge=0, description="Available stock for this size")
 
 class Product(BaseModel):
     title: str = Field(..., description="Product title")
@@ -16,6 +20,7 @@ class Product(BaseModel):
     brand: Optional[str] = Field("Sepatuku", description="Brand name")
     category: Optional[str] = Field("Shoes", description="Category")
     in_stock: bool = Field(True, description="Stock availability")
+    sizes: List[SizeStock] = Field(default_factory=list, description="List of size/stock variants")
 
 class OrderItem(BaseModel):
     product_id: str
@@ -23,6 +28,7 @@ class OrderItem(BaseModel):
     price: float
     quantity: int = Field(ge=1)
     image: Optional[str] = None
+    size: Union[str, int]
 
 class Customer(BaseModel):
     name: str
